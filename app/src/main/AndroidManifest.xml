@@ -3,7 +3,7 @@
     package="com.joseph.nxtcontroller">
 
     <uses-permission android:name="android.permission.BLUETOOTH" />
-
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
 
     <application
@@ -20,6 +20,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".PopUp"></activity>
+        <activity android:name=".DeviceListActivity"></activity>
     </application>
 
 </manifest>

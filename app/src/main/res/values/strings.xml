@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">NXTController</string>
+    <string name="text_list_devices">List of Devices</string>
+    <string name="text_pair">Pair</string>
+    <string name="text_bluetooth_off">Bluetooth is Off</string>
+    <string name="text_bluetooth_on">Bluetooth is On</string>
+    <string name="text_view_paired">Paired Devices</string>
+    <string name="text_scan_devices">Scan Devices</string>
 </resources>
