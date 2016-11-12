@@ -15,6 +15,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import java.io.InputStream;
@@ -33,6 +34,7 @@ public class MainScreen extends AppCompatActivity {
     private Button mScanBtn;
     private InputStream is;
     private OutputStream os;
+    private ImageView icon;
 
     private ProgressDialog mProgressDlg;
 
@@ -52,7 +54,7 @@ public class MainScreen extends AppCompatActivity {
         mActivateBtn = (Button) findViewById(R.id.vv_btnConnect);
         mPairedBtn = (Button) findViewById(R.id.btn_view_paired);
         mScanBtn = (Button) findViewById(R.id.btn_scan);
-
+        icon = (ImageView)findViewById(R.id.vv_IcoImag);
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
 
@@ -73,9 +75,9 @@ public class MainScreen extends AppCompatActivity {
             mPairedBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    //HashSet<BluetoothDevice> pairedDevices = (HashSet)mBluetoothAdapter.getBondedDevices(); // need to sort through Set and return only Nxt devices
+                    //HashSet<BluetoothDevice> pairedDevices = (HashSet)mBluetoothAdapter.getBondedDevices();
                     HashSet<BluetoothDevice> pairedDevices = new HashSet<>();
-                    for(BluetoothDevice d : mBluetoothAdapter.getBondedDevices()){ // check for duplicates
+                    for(BluetoothDevice d : mBluetoothAdapter.getBondedDevices()){ // checks for duplicates
                         if (!pairedDevices.contains(d)){
                             ArrayList<BluetoothDevice> list = new ArrayList<>();
                             list.addAll(pairedDevices);
@@ -109,7 +111,7 @@ public class MainScreen extends AppCompatActivity {
                 }
             });
 
-            mActivateBtn.setOnClickListener(new View.OnClickListener() { // change this
+            mActivateBtn.setOnClickListener(new View.OnClickListener() { // change this, maybe
                 @Override
                 public void onClick(View v) {
                     if (mBluetoothAdapter.isEnabled()) {
@@ -152,6 +154,10 @@ public class MainScreen extends AppCompatActivity {
         unregisterReceiver(mReceiver);
 
         super.onDestroy();
+    }
+
+    private void showConnected(){
+        icon.setImageResource(R.drawable.bt_on);
     }
 
     private void showEnabled() {
