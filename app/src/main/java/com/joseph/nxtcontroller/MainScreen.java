@@ -3,15 +3,13 @@ package com.joseph.nxtcontroller;
 import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
-import android.bluetooth.le.BluetoothLeScanner;
+import android.bluetooth.BluetoothSocket;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
-import android.net.wifi.WifiManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -19,8 +17,12 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 public class MainScreen extends AppCompatActivity {
 
@@ -29,12 +31,16 @@ public class MainScreen extends AppCompatActivity {
     private Button mActivateBtn;
     private Button mPairedBtn;
     private Button mScanBtn;
+    private InputStream is;
+    private OutputStream os;
 
     private ProgressDialog mProgressDlg;
 
     ArrayList<BluetoothDevice> mDeviceList;
 
+
     private BluetoothAdapter mBluetoothAdapter;
+    private BluetoothSocket socket;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,15 +48,15 @@ public class MainScreen extends AppCompatActivity {
 
         setContentView(R.layout.activity_main_screen);
 
-        mStatusTv           = (TextView) findViewById(R.id.tv_status);
-        mActivateBtn 		= (Button) findViewById(R.id.vv_btnConnect);
-        mPairedBtn 			= (Button) findViewById(R.id.btn_view_paired);
-        mScanBtn 			= (Button) findViewById(R.id.btn_scan);
+        mStatusTv = (TextView) findViewById(R.id.tv_status);
+        mActivateBtn = (Button) findViewById(R.id.vv_btnConnect);
+        mPairedBtn = (Button) findViewById(R.id.btn_view_paired);
+        mScanBtn = (Button) findViewById(R.id.btn_scan);
 
-        mBluetoothAdapter	= BluetoothAdapter.getDefaultAdapter();
-        BluetoothLeScanner b;
+        mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
-        mProgressDlg 		= new ProgressDialog(this);
+
+        mProgressDlg = new ProgressDialog(this);
         mProgressDlg.setMessage("Scanning...");
         mProgressDlg.setCancelable(false);
         mProgressDlg.setButton(DialogInterface.BUTTON_NEGATIVE, "Cancel", new DialogInterface.OnClickListener() {
@@ -63,25 +69,34 @@ public class MainScreen extends AppCompatActivity {
 
         if (mBluetoothAdapter == null) {
             showUnsupported();
-        }
-        else {
+        } else {
             mPairedBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
+                    //HashSet<BluetoothDevice> pairedDevices = (HashSet)mBluetoothAdapter.getBondedDevices(); // need to sort through Set and return only Nxt devices
+                    HashSet<BluetoothDevice> pairedDevices = new HashSet<>();
+                    for(BluetoothDevice d : mBluetoothAdapter.getBondedDevices()){ // check for duplicates
+                        if (!pairedDevices.contains(d)){
+                            ArrayList<BluetoothDevice> list = new ArrayList<>();
+                            list.addAll(pairedDevices);
+                            Intent intent = new Intent(MainScreen.this, DeviceListActivity.class);
+                            intent.putParcelableArrayListExtra("device.list", list);
+                            startActivity(intent);
+                        }
+                    }
 
                     if (pairedDevices == null || pairedDevices.size() == 0) {
                         showToast("No Paired Devices Found");
-                    } else {
+                    }
+                    /*
+                    else {
                         ArrayList<BluetoothDevice> list = new ArrayList<>();
-
                         list.addAll(pairedDevices);
                         Intent intent = new Intent(MainScreen.this, DeviceListActivity.class);
-
                         intent.putParcelableArrayListExtra("device.list", list);
-
                         startActivity(intent);
                     }
+                    */
                 }
             });
 
@@ -91,13 +106,10 @@ public class MainScreen extends AppCompatActivity {
 
                     //mBluetoothAdapter.startDiscovery();
                     BluetoothAdapter.getDefaultAdapter().startDiscovery();
-
-
-
                 }
             });
 
-            mActivateBtn.setOnClickListener(new View.OnClickListener() {
+            mActivateBtn.setOnClickListener(new View.OnClickListener() { // change this
                 @Override
                 public void onClick(View v) {
                     if (mBluetoothAdapter.isEnabled()) {
@@ -108,7 +120,7 @@ public class MainScreen extends AppCompatActivity {
                         startActivityForResult(intent, 1000);
                     }
                 }
-            });
+            }); // change this
 
             if (mBluetoothAdapter.isEnabled()) {
                 showEnabled();
@@ -185,7 +197,12 @@ public class MainScreen extends AppCompatActivity {
             if (BluetoothDevice.ACTION_FOUND.equals(action)) {
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                 mDeviceList.add(device);
-                showToast("Found device " + device.getName());
+                if (device.getName() == null){
+                    showToast("Found device " + device.getAddress());
+                }
+                else {
+                    showToast("Found device " + device.getName());
+                }
             }
 
             if (BluetoothAdapter.ACTION_STATE_CHANGED.equals(action)) {
@@ -203,18 +220,40 @@ public class MainScreen extends AppCompatActivity {
                 mProgressDlg.dismiss();
 
                 Intent newIntent = new Intent(MainScreen.this, DeviceListActivity.class);
-                if (mDeviceList.isEmpty()){
-                    Log.d("onReceive: ", "EMPTY");
+                if (mDeviceList.isEmpty()) {
+                    showToast("Device List: EMPTY");
                 }
                 newIntent.putParcelableArrayListExtra("device.list", mDeviceList);
-
                 startActivity(newIntent);
+            }
+
+            if (intent.getAction().equals("android.bluetooth.device.action.ACL_CONNECTED")) {
+                try {
+                    is = socket.getInputStream();
+                    os = socket.getOutputStream();
+                    //bConnected = true;
+                    //btnConnect.setVisibility(View.GONE);
+                    //btnDisconnect.setVisibility(View.VISIBLE);
+                } catch (Exception e) {
+                    is = null;
+                    os = null;
+                    //disconnectFromRobot(null);
+                }
             }
 
         }
     };
 
-
+    private void connectToRobot(BluetoothDevice bd) {
+        try {
+            socket = bd.createRfcommSocketToServiceRecord
+                    (UUID.fromString("00001101-0000-1000-8000-00805F9B34FB"));
+            socket.connect();
+            showToast(("Connect to " + bd.getName() + " at " + bd.getAddress()));
+        } catch (Exception e) {
+            showToast("Error with remote device [" + e.getMessage() + "]");
+        }
+    }
 
 
 }

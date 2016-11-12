@@ -28,7 +28,7 @@ public class DeviceListActivity extends Activity {
 		
 		setContentView(R.layout.activity_pop_up);
 		
-		mDeviceList		= getIntent().getExtras().getParcelableArrayList("device.list");
+		mDeviceList		= getIntent().getExtras().getParcelableArrayList("device.list"); // get list from main activity
 		
 		mListView		= (ListView) findViewById(R.id.lv_paired);
 		
@@ -42,9 +42,9 @@ public class DeviceListActivity extends Activity {
 				
 				if (device.getBondState() == BluetoothDevice.BOND_BONDED) {
 					unpairDevice(device);
-				} else {
+				}
+				else {
 					showToast("Pairing...");
-					
 					pairDevice(device);
 				}
 			}
@@ -71,7 +71,9 @@ public class DeviceListActivity extends Activity {
         try {
             Method method = device.getClass().getMethod("createBond", (Class[]) null);
             method.invoke(device, (Object[]) null);
+
         } catch (Exception e) {
+            showToast("Pairing failed");
             e.printStackTrace();
         }
     }
