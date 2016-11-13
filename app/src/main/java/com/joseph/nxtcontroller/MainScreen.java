@@ -30,6 +30,7 @@ public class MainScreen extends AppCompatActivity {
 
     private TextView mStatusTv;
     private Button mActivateBtn;
+    private Button mConnectBtn;
     private Button mPairedBtn;
     private Button mScanBtn;
     private InputStream is;
@@ -52,6 +53,7 @@ public class MainScreen extends AppCompatActivity {
 
         mStatusTv = (TextView) findViewById(R.id.tv_status);
         mActivateBtn = (Button) findViewById(R.id.vv_btnConnect);
+        mConnectBtn = (Button) findViewById(R.id.connectRobot);
         mPairedBtn = (Button) findViewById(R.id.btn_view_paired);
         mScanBtn = (Button) findViewById(R.id.btn_scan);
         icon = (ImageView)findViewById(R.id.vv_IcoImag);
@@ -101,6 +103,25 @@ public class MainScreen extends AppCompatActivity {
                     */
                 }
             });
+
+
+            mConnectBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                    for(BluetoothDevice d : mBluetoothAdapter.getBondedDevices()) {
+
+                        if (d.getName().equalsIgnoreCase("NXT04")){
+                            showToast("found robot");
+                            connectToRobot(d);
+                            break;
+                        }
+                    }
+
+
+                }
+            });
+
 
             mScanBtn.setOnClickListener(new View.OnClickListener() {
                 @Override

@@ -36,7 +36,7 @@
         android:layout_height="wrap_content"
         android:text="Servo"
         android:id="@+id/vv_btnServo"
-        android:layout_alignTop="@+id/subvv_btnConnectStatus"
+        android:layout_alignTop="@+id/connectRobot"
         />
 
     <TextView
@@ -82,7 +82,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Connect"
-        android:id="@+id/subvv_btnConnectStatus"
+        android:id="@+id/connectRobot"
         android:layout_alignParentBottom="true"
         android:layout_alignLeft="@+id/btn_view_paired"
         android:layout_alignStart="@+id/btn_view_paired" />
@@ -93,8 +93,8 @@
         android:text="Poll"
         android:id="@+id/subvv_btnPoll"
         android:layout_alignParentBottom="true"
-        android:layout_toLeftOf="@+id/subvv_btnConnectStatus"
-        android:layout_toStartOf="@+id/subvv_btnConnectStatus"
+        android:layout_toLeftOf="@+id/connectRobot"
+        android:layout_toStartOf="@+id/connectRobot"
         android:layout_marginRight="21dp"
         android:layout_marginEnd="21dp" />
 
