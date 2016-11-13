@@ -37,6 +37,7 @@ public class MainScreen extends AppCompatActivity {
     private OutputStream os;
     private ImageView icon;
     private TextView connectionStatus;
+    private Button btnDrive;
 
     private ProgressDialog mProgressDlg;
 
@@ -57,6 +58,7 @@ public class MainScreen extends AppCompatActivity {
         mConnectBtn = (Button) findViewById(R.id.connectRobot);
         mPairedBtn = (Button) findViewById(R.id.btn_view_paired);
         mScanBtn = (Button) findViewById(R.id.btn_scan);
+        btnDrive = (Button)findViewById(R.id.btnDrive);
         icon = (ImageView)findViewById(R.id.vv_IcoImag);
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         connectionStatus = (TextView)findViewById(R.id.vv_tvConnectStatus);
@@ -149,6 +151,13 @@ public class MainScreen extends AppCompatActivity {
                 }
             }); // change this
 
+            btnDrive.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    moveMotor(0, 75, 0x20);
+                }
+            });
+
             if (mBluetoothAdapter.isEnabled()) {
                 showEnabled();
             } else {
@@ -201,6 +210,7 @@ public class MainScreen extends AppCompatActivity {
     private void showDisabled() {
         mStatusTv.setText("Bluetooth is Off");
         mStatusTv.setTextColor(Color.RED);
+        icon.setImageResource(R.drawable.bt_off);
 
         mActivateBtn.setText("Enable");
         mActivateBtn.setEnabled(true);
@@ -267,8 +277,7 @@ public class MainScreen extends AppCompatActivity {
                     showToast(("Connect to " + mBluetoothAdapter.getName() + " at " + mBluetoothAdapter.getAddress()));
                     connectionStatus.setText("Connect to " + mBluetoothAdapter.getName() + " at " + mBluetoothAdapter.getAddress());
                     //bConnected = true;
-                    //btnConnect.setVisibility(View.GONE);
-                    //btnDisconnect.setVisibility(View.VISIBLE);
+                    icon.setImageResource(R.drawable.bt_on);
                 } catch (Exception e) {
                     is = null;
                     os = null;
@@ -293,6 +302,39 @@ public class MainScreen extends AppCompatActivity {
             showToast("Error with remote device [" + e.getMessage() + "]");
         }
     }
+
+
+    private void moveMotor(int motor,int speed, int state) {
+        try {
+            byte[] buffer = new byte[15];
+
+            buffer[0] = (byte) (15-2);			//length lsb
+            buffer[1] = 0;						// length msb
+            buffer[2] =  0;						// direct command (with response)
+            buffer[3] = 0x04;					// set output state
+            buffer[4] = (byte) motor;			// output 1 (motor B)
+            buffer[5] = (byte) speed;			// power
+            buffer[6] = 1 + 2;					// motor on + brake between PWM
+            buffer[7] = 0;						// regulation
+            buffer[8] = 0;						// turn ration??
+            buffer[9] = (byte) state; //0x20;					// run state
+            buffer[10] = 0;
+            buffer[11] = 0;
+            buffer[12] = 0;
+            buffer[13] = 0;
+            buffer[14] = 0;
+
+            os.write(buffer);
+            os.flush();
+        }
+        catch (Exception e) {
+            showToast("Error in MoveForward(" + e.getMessage() + ")");
+        }
+    }
+
+
+
+
 
 
 }
