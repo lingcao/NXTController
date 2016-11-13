@@ -10,18 +10,6 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.joseph.nxtcontroller.MainScreen">
 
-    <ProgressBar
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/progressBar"
-        android:layout_centerVertical="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignRight="@+id/vv_btnClose"
-        android:layout_alignEnd="@+id/vv_btnClose"
-        style="@android:style/Widget.DeviceDefault.Light.ProgressBar.Horizontal"
-        android:indeterminate="true" />
-
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -31,91 +19,17 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Servo"
-        android:id="@+id/vv_btnServo"
-        android:layout_alignTop="@+id/connectRobot"
-        />
-
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="20dip"
-        android:text="Battery Level"
-        android:id="@+id/vv_tvBatterLevel"
-        android:layout_above="@+id/progressBar"
-        android:layout_alignLeft="@+id/vv_tvConnectStatus"
-        android:layout_alignStart="@+id/vv_tvConnectStatus" />
-
-    <Button
-        android:id="@+id/btn_scan"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:enabled="false"
-        android:text="@string/text_scan_devices"
-        android:layout_above="@+id/vv_btnClose"
-        android:layout_marginBottom="14dp"
-        android:layout_alignLeft="@+id/vv_btnClose"
-        android:layout_alignStart="@+id/vv_btnClose" />
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="ClOSE"
-        android:id="@+id/vv_btnClose"
-        android:layout_above="@+id/progressBar"
-        android:layout_alignLeft="@+id/vv_btnConnect"
-        android:layout_alignStart="@+id/vv_btnConnect" />
-
-    <Button
-        android:id="@+id/btn_view_paired"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:enabled="false"
-        android:text="@string/text_view_paired"
-        android:layout_above="@+id/btn_scan"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Connect"
-        android:id="@+id/connectRobot"
-        android:layout_alignParentBottom="true"
-        android:layout_alignLeft="@+id/btn_view_paired"
-        android:layout_alignStart="@+id/btn_view_paired" />
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Poll"
-        android:id="@+id/subvv_btnPoll"
-        android:layout_alignParentBottom="true"
-        android:layout_toLeftOf="@+id/connectRobot"
-        android:layout_toStartOf="@+id/connectRobot"
-        android:layout_marginRight="21dp"
-        android:layout_marginEnd="21dp" />
-
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/vv_IcoImag"
-        android:src="@drawable/bt_off"
-        android:layout_above="@+id/btn_view_paired"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
-
-    <TextView
-        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Not Connected"
         android:id="@+id/vv_tvConnectStatus"
         android:textSize="14dp"
         android:layout_below="@+id/vv_IcoImag"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentStart="true"
+        android:ellipsize="none"
+        android:scrollHorizontally="false" />
 
     <TextView
         android:id="@+id/tv_status"
@@ -132,11 +46,73 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Connect"
+        android:text="Enable"
         android:id="@+id/vv_btnConnect"
         android:layout_alignParentTop="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true" />
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/vv_IcoImag"
+        android:src="@drawable/bt_off"
+        android:layout_below="@+id/tv_status"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="11dp" />
+
+    <Button
+        android:id="@+id/btn_scan"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:enabled="false"
+        android:text="@string/text_scan_devices"
+        android:layout_below="@+id/vv_tvConnectStatus"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="28dp" />
+
+    <Button
+        android:id="@+id/btn_view_paired"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:enabled="false"
+        android:text="@string/text_view_paired"
+        android:layout_below="@+id/btn_scan"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Poll"
+        android:id="@+id/subvv_btnPoll"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Connect"
+        android:id="@+id/connectRobot"
+        android:layout_below="@+id/btn_view_paired"
+        android:layout_marginTop="12dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignRight="@+id/vv_btnServo"
+        android:layout_alignEnd="@+id/vv_btnServo" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Servo"
+        android:id="@+id/vv_btnServo"
+        android:layout_alignParentBottom="true"
+        android:layout_alignLeft="@+id/vv_btnConnect"
+        android:layout_alignStart="@+id/vv_btnConnect" />
 
 
 </RelativeLayout>
