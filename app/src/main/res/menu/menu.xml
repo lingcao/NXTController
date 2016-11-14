@@ -4,9 +4,10 @@
     android:layout_height="match_parent">
 
 
-    <item android:id="@+id/name"
-        android:title="Device Name" />
-    <item android:id="@+id/ID"
-        android:title="Device ID" />
+    <item android:id="@+id/Battery"
+        android:title="Battery Level" />
+
+    <item android:id="@+id/Activate"
+        android:title="Disable" />
 
 </menu>

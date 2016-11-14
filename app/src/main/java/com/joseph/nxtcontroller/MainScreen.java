@@ -12,7 +12,8 @@ import android.content.IntentFilter;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -22,7 +23,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Set;
 import java.util.UUID;
 
 public class MainScreen extends AppCompatActivity {
@@ -64,6 +64,7 @@ public class MainScreen extends AppCompatActivity {
         connectionStatus = (TextView)findViewById(R.id.vv_tvConnectStatus);
 
 
+
         mProgressDlg = new ProgressDialog(this);
         mProgressDlg.setMessage("Scanning...");
         mProgressDlg.setCancelable(false);
@@ -81,16 +82,11 @@ public class MainScreen extends AppCompatActivity {
             mPairedBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    //HashSet<BluetoothDevice> pairedDevices = (HashSet)mBluetoothAdapter.getBondedDevices();
+
                     HashSet<BluetoothDevice> pairedDevices = new HashSet<>();
                     pairedDevices.clear(); // clear old
                     for(BluetoothDevice d : mBluetoothAdapter.getBondedDevices()){ // checks for duplicates
                         if (!pairedDevices.contains(d)){
-                            //ArrayList<BluetoothDevice> list = new ArrayList<>();
-                            //list.addAll(pairedDevices);
-                            //Intent intent = new Intent(MainScreen.this, DeviceListActivity.class);
-                            //intent.putParcelableArrayListExtra("device.list", list);
-                            //startActivity(intent);
                             pairedDevices.add(d);
                         }
                     }
@@ -154,7 +150,7 @@ public class MainScreen extends AppCompatActivity {
             btnDrive.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    moveMotor(0, 75, 0x20);
+                    moveMotor(0xff, 75, 0x20); //0xff for power to all ports
                 }
             });
 
@@ -172,6 +168,8 @@ public class MainScreen extends AppCompatActivity {
         registerReceiver(mReceiver, filter);
         registerReceiver(mReceiver,new IntentFilter("android.bluetooth.device.action.ACL_CONNECTED"));
         registerReceiver(mReceiver,new IntentFilter("android.bluetooth.device.action.ACL_DISCONNECTED"));
+
+
     }
 
     @Override
@@ -276,7 +274,6 @@ public class MainScreen extends AppCompatActivity {
                     os = socket.getOutputStream();
                     showToast(("Connect to " + mBluetoothAdapter.getName() + " at " + mBluetoothAdapter.getAddress()));
                     connectionStatus.setText("Connect to " + mBluetoothAdapter.getName() + " at " + mBluetoothAdapter.getAddress());
-                    //bConnected = true;
                     icon.setImageResource(R.drawable.bt_on);
                 } catch (Exception e) {
                     is = null;
@@ -296,8 +293,6 @@ public class MainScreen extends AppCompatActivity {
         try {
             socket = bd.createRfcommSocketToServiceRecord(UUID.fromString("00001101-0000-1000-8000-00805F9B34FB"));
             socket.connect();
-            //showToast(("Connect to " + bd.getName() + " at " + bd.getAddress()));
-            //connectionStatus.setText("Connect to " + bd.getName() + " at " + bd.getAddress());
         } catch (Exception e) {
             showToast("Error with remote device [" + e.getMessage() + "]");
         }
@@ -333,8 +328,58 @@ public class MainScreen extends AppCompatActivity {
     }
 
 
+    public void getBatteryLevel(){
+        try {
+            byte[] buffer = new byte[15];
+
+            buffer[0] = (byte) (15-2);			//length lsb
+            buffer[1] = 0;						// length msb
+            buffer[2] =  0;						// direct command (with response)
+            buffer[3] = 0x04;					// set output state
+            buffer[4] = 0;			// output 1 (motor B)
+            buffer[5] = 0;			// power
+            buffer[6] = 1 + 2;					// motor on + brake between PWM
+            buffer[7] = 0;						// regulation
+            buffer[8] = 0;						// turn ration??
+            buffer[9] = 0x0B;				// run state
+            buffer[10] = 0;
+            buffer[11] = 0;
+            buffer[12] = 0;
+            buffer[13] = 0;
+            buffer[14] = 0;
+
+            os.write(buffer);
+            os.flush();
+            byte[] b = new byte[1024];
+            int response  = is.read(b);
+            showToast(response + "");
+        }
+        catch (Exception e) {
+            showToast("Error in MoveForward(" + e.getMessage() + ")");
+        }
+    }
 
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        if (id == R.id.Battery){
+            getBatteryLevel();
+        }
+
+
+        return super.onOptionsItemSelected(item);
+    }
 
 
 }
